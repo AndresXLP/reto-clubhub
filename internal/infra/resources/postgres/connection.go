@@ -5,24 +5,26 @@ import (
 	"sync"
 
 	"franchises-system/config"
-	"github.com/jmoiron/sqlx"
 	"github.com/labstack/gommon/log"
 	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var (
-	connection *sqlx.DB
+	connection *gorm.DB
 	once       sync.Once
 )
 
-func NewPostgresConnection() *sqlx.DB {
+func NewPostgresConnection() *gorm.DB {
 	once.Do(func() {
 		connection = getConnection()
 	})
 	return connection
 }
 
-func getConnection() *sqlx.DB {
+func getConnection() *gorm.DB {
 	urlConnection := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		config.Environments().Postgres.Host,
 		config.Environments().Postgres.Port,
@@ -30,7 +32,9 @@ func getConnection() *sqlx.DB {
 		config.Environments().Postgres.Password,
 		config.Environments().Postgres.DbName)
 
-	db, err := sqlx.Connect("postgres", urlConnection)
+	db, err := gorm.Open(postgres.Open(urlConnection), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
 		log.Panic(err)
 	}
