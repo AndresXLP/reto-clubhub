@@ -8,11 +8,20 @@ import (
 )
 
 type Config struct {
-	Server Server `mapstructure:"server" validate:"required"`
+	Server   Server   `mapstructure:"server" validate:"required"`
+	Postgres Postgres `mapstructure:"postgres" validate:"required"`
 }
 
 type Server struct {
 	Port int `mapstructure:"port" validate:"required"`
+}
+
+type Postgres struct {
+	Host     string `mapstructure:"host" validate:"required"`
+	Port     int    `mapstructure:"port" validate:"required"`
+	User     string `mapstructure:"user" validate:"required"`
+	Password string `mapstructure:"password" validate:"required"`
+	DbName   string `mapstructure:"db_name" validate:"required"`
 }
 
 var (
