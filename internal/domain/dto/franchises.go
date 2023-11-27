@@ -1,20 +1,31 @@
 package dto
 
-import "github.com/go-playground/validator/v10"
+import (
+	"context"
+
+	"github.com/go-playground/mold/v4/modifiers"
+	"github.com/go-playground/validator/v10"
+)
 
 var (
 	validate = validator.New()
+	conform  = modifiers.New()
+	ctx      = context.Background()
 )
 
 type Franchise struct {
 	ID        int64    `json:"ID,omitempty"`
 	CompanyID int64    `json:"company_owner" validate:"required"`
-	Name      string   `json:"name" validate:"required"`
-	Url       string   `json:"url" validate:"required,url_encoded"`
+	Name      string   `json:"name" validate:"required" mod:"ucase"`
+	Url       string   `json:"url" validate:"required,url_encoded" mod:"lcase"`
 	Location  Location `json:"location" validate:"required"`
 }
 
 func (f *Franchise) Validate() error {
+	if err := conform.Struct(ctx, f); err != nil {
+		return err
+	}
+
 	return validate.Struct(f)
 }
 
