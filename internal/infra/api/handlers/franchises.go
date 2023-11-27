@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
+	"strings"
 
 	"franchises-system/internal/app"
 	"franchises-system/internal/domain/dto"
@@ -10,7 +12,9 @@ import (
 )
 
 type Franchises interface {
-	Create(c echo.Context) error
+	CreateFranchise(c echo.Context) error
+	GetFranchiseByName(c echo.Context) error
+	GetFranchisesByCompanyOwner(c echo.Context) error
 }
 
 type franchises struct {
@@ -23,7 +27,7 @@ func NewFranchisesHandler(app app.Franchises) Franchises {
 	}
 }
 
-func (hand *franchises) Create(c echo.Context) error {
+func (hand *franchises) CreateFranchise(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	request := dto.Franchise{}
@@ -44,5 +48,43 @@ func (hand *franchises) Create(c echo.Context) error {
 
 	return c.JSON(http.StatusCreated, entity.Response{
 		Message: "Franchise created successfully",
+	})
+}
+
+func (hand *franchises) GetFranchiseByName(c echo.Context) error {
+	request := strings.ToUpper(c.Param("name"))
+	if request == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, entity.Response{
+			Message: "Name is required"})
+	}
+
+	ctx := c.Request().Context()
+	franchise, err := hand.app.GetFranchiseByName(ctx, request)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, entity.Response{
+		Message: "Franchise found successfully",
+		Data:    franchise,
+	})
+}
+
+func (hand *franchises) GetFranchisesByCompanyOwner(c echo.Context) error {
+	companyID, err := strconv.ParseInt(c.Param("company_id"), 10, 64)
+	if err != nil || companyID == 0 {
+		return echo.NewHTTPError(http.StatusBadRequest, entity.Response{
+			Message: "Company ID is required"})
+	}
+
+	ctx := c.Request().Context()
+	franchisesWithCompany, err := hand.app.GetFranchisesByCompanyID(ctx, companyID)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, entity.Response{
+		Message: "Franchises found successfully",
+		Data:    franchisesWithCompany,
 	})
 }

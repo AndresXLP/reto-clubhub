@@ -56,7 +56,7 @@ func (app *companies) GetCompanyByID(ctx context.Context, ID int64) (dto.Company
 	}
 
 	if company.ID == 0 {
-		return dto.Company{}, echo.NewHTTPError(http.StatusUnprocessableEntity, entity.Response{
+		return dto.Company{}, echo.NewHTTPError(http.StatusNotFound, entity.Response{
 			Message: "Company not Found",
 		})
 	}

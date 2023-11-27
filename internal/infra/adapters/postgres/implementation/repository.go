@@ -19,6 +19,8 @@ func NewRepository(db *gorm.DB) interfaces.Repository {
 	}
 }
 
+//Franchises Repository
+
 func (repo repository) CreateFranchise(ctx context.Context, newFranchise model.Franchises, location dto.Location) error {
 	country := model.Countries{Name: location.Country}
 	city := model.Cities{Name: location.City}
@@ -84,6 +86,25 @@ func (repo repository) GetFranchisesByCompanyID(ctx context.Context, ID int64) (
 	return franchises.ToDomainDTO(), nil
 }
 
+func (repo repository) GetFranchiseByName(ctx context.Context, name string) (dto.Franchise, error) {
+	franchise := model.FranchiseWithLocation{}
+	if err := repo.db.WithContext(ctx).
+		Table("franchises").
+		Select("franchises.id, franchises.name, franchises.url, addresses.address,"+
+			"addresses.zip_code, cities.name as city_name, countries.name as country_name").
+		Joins("INNER JOIN addresses ON addresses.id = franchises.address_id").
+		Joins("INNER JOIN cities ON cities.id = addresses.city_id").
+		Joins("INNER JOIN countries ON countries.id = cities.country_id").
+		Where("franchises.name = ?", name).
+		Scan(&franchise).Error; err != nil {
+		return dto.Franchise{}, err
+	}
+
+	return franchise.ToDomainDTO(), nil
+}
+
+//Company Repository
+
 func (repo repository) CreateCompany(ctx context.Context, companies model.Companies, location dto.Location) error {
 	country := model.Countries{Name: location.Country}
 	city := model.Cities{Name: location.City}
@@ -131,6 +152,8 @@ func (repo repository) GetCompanyByID(ctx context.Context, ID int64) (dto.Compan
 	return company.ToDomainDTO(), nil
 }
 
+//Owner Repository
+
 func (repo repository) CreateOwner(ctx context.Context, newOwner model.Owners, location dto.Location) error {
 	country := model.Countries{Name: location.Country}
 	city := model.Cities{Name: location.City}
@@ -177,6 +200,8 @@ func (repo repository) GetOwnerByID(ctx context.Context, ID int64) (dto.Owner, e
 
 	return owner.ToDomainDTO(), nil
 }
+
+// Auxiliary Methods Repository
 
 func (repo repository) getLocation(tx *gorm.DB, location model.Locations) error {
 	if err := repo.getCountry(tx, location.Countries); err != nil {

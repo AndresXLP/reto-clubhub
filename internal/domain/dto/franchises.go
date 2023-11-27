@@ -15,7 +15,7 @@ var (
 
 type Franchise struct {
 	ID        int64    `json:"ID,omitempty"`
-	CompanyID int64    `json:"company_owner" validate:"required"`
+	CompanyID int64    `json:"company_owner,omitempty" validate:"required"`
 	Name      string   `json:"name" validate:"required" mod:"ucase"`
 	Url       string   `json:"url" validate:"required,url_encoded" mod:"lcase"`
 	Location  Location `json:"location" validate:"required"`
@@ -31,6 +31,15 @@ func (f *Franchise) Validate() error {
 
 type Franchises []Franchise
 
-func (f *Franchises) Add(fr Franchise) {
-	*f = append(*f, fr)
+func (f *Franchises) Add(fr ...Franchise) {
+	*f = append(*f, fr...)
+}
+
+type FranchiseWithCompany struct {
+	Company   Company     `json:"company"`
+	Franchise []Franchise `json:"franchises"`
+}
+
+func (f *FranchiseWithCompany) Add(fr ...Franchise) {
+	f.Franchise = append(f.Franchise, fr...)
 }
