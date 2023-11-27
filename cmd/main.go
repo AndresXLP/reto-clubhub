@@ -14,6 +14,14 @@ var (
 	serverPort = config.Environments().Server.Port
 )
 
+// main
+//
+//	@title			Franchises System
+//	@version		1.0
+//	@description	Hotel franchise management system.
+//	@license.name	Andres Puello
+//	@BasePath		/api
+//	@schemes		http
 func main() {
 	container := providers.BuildContainer()
 

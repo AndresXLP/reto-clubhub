@@ -23,6 +23,15 @@ func NewOwnersHandler(app app.Owners) Owners {
 	}
 }
 
+// @Tags			Owners
+// @Summary		Create owner
+// @Description	Create owner
+// @Produce		json
+// @Param			owner	body		dto.Owner	true	"owner"
+// @Success		201		{object}	entity.Response
+// @Failure		400		{object}	entity.Response
+// @Failure		500		{object}	entity.Response
+// @Router			/owners/ [post]
 func (hand *owners) CreateOwner(c echo.Context) error {
 	request := dto.Owner{}
 	if err := c.Bind(&request); err != nil {

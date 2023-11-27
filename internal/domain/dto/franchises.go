@@ -14,10 +14,10 @@ var (
 )
 
 type Franchise struct {
-	ID        int64    `json:"ID,omitempty"`
-	CompanyID int64    `json:"company_owner,omitempty" validate:"required"`
-	Name      string   `json:"name" validate:"required" mod:"ucase"`
-	Url       string   `json:"url" validate:"required,url_encoded" mod:"lcase"`
+	ID        int64    `json:"ID,omitempty" swaggerignore:"true"`
+	CompanyID int64    `json:"company_owner,omitempty" validate:"required" example:"1"`
+	Name      string   `json:"name" validate:"required" mod:"ucase" example:"Park royal"`
+	Url       string   `json:"url" validate:"required,url_encoded" mod:"lcase" example:"www.park-royal.com"`
 	Location  Location `json:"location" validate:"required"`
 }
 

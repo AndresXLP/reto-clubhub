@@ -1,10 +1,13 @@
 package router
 
 import (
+	_ "franchises-system/docs"
 	"franchises-system/internal/infra/api/handlers"
 	"franchises-system/internal/infra/api/router/groups"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 type Router struct {
@@ -36,6 +39,8 @@ func (rtr *Router) Init() {
 
 	base := rtr.server.Group("/api")
 	base.GET("/health", handlers.HealthCheck)
+	base.GET("/swagger/*", echoSwagger.WrapHandler)
+
 	rtr.franchise.Resource(base)
 	rtr.owner.Resource(base)
 	rtr.company.Resource(base)

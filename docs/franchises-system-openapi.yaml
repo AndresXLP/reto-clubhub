@@ -1,0 +1,263 @@
+basePath: /api
+definitions:
+  dto.Company:
+    properties:
+      location:
+        $ref: '#/definitions/dto.Location'
+      name:
+        example: My entreprise holding
+        type: string
+      owner_id:
+        example: 1
+        type: integer
+      tax_number:
+        example: DD79654121
+        type: string
+    required:
+    - location
+    - name
+    - owner_id
+    - tax_number
+    type: object
+  dto.Franchise:
+    properties:
+      company_owner:
+        example: 1
+        type: integer
+      location:
+        $ref: '#/definitions/dto.Location'
+      name:
+        example: Park royal
+        type: string
+      url:
+        example: www.park-royal.com
+        type: string
+    required:
+    - company_owner
+    - location
+    - name
+    - url
+    type: object
+  dto.FranchiseWithCompany:
+    properties:
+      company:
+        $ref: '#/definitions/dto.Company'
+      franchises:
+        items:
+          $ref: '#/definitions/dto.Franchise'
+        type: array
+    type: object
+  dto.Location:
+    properties:
+      address:
+        example: 78 Rober ST
+        type: string
+      city:
+        example: Toronto
+        type: string
+      country:
+        example: Canada
+        type: string
+      zip_code:
+        example: F9A 92O
+        type: string
+    required:
+    - address
+    - city
+    - country
+    - zip_code
+    type: object
+  dto.Owner:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      last_name:
+        type: string
+      location:
+        $ref: '#/definitions/dto.Location'
+      phone:
+        type: string
+    required:
+    - email
+    - first_name
+    - last_name
+    - location
+    - phone
+    type: object
+  entity.Response:
+    properties:
+      data: {}
+      message:
+        type: string
+    type: object
+  handlers.HealthCheckResponse:
+    properties:
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: Hotel franchise management system.
+  license:
+    name: Andres Puello
+  title: Franchises System
+  version: "1.0"
+paths:
+  /companies/:
+    post:
+      description: Create company
+      parameters:
+      - description: Company
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Company'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.Response'
+      summary: Create company
+      tags:
+      - Companies
+  /franchises/:
+    post:
+      description: Create a franchise
+      parameters:
+      - description: Franchise
+        in: body
+        name: franchise
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Franchise'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.Response'
+      summary: Create a franchise
+      tags:
+      - Franchises
+  /franchises/company/{company_id}:
+    get:
+      description: Get franchises by company owner
+      parameters:
+      - description: Company ID
+        in: path
+        name: company_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.FranchiseWithCompany'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.Response'
+      summary: Get franchises by company owner
+      tags:
+      - Franchises
+  /franchises/details/{name}:
+    get:
+      description: Get a franchise by name
+      parameters:
+      - description: Franchise name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.Franchise'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.Response'
+      summary: Get a franchise by name
+      tags:
+      - Franchises
+  /health:
+    get:
+      description: health service
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.HealthCheckResponse'
+      summary: Check if service is active
+      tags:
+      - Health
+  /owners/:
+    post:
+      description: Create owner
+      parameters:
+      - description: owner
+        in: body
+        name: owner
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Owner'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/entity.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/entity.Response'
+      summary: Create owner
+      tags:
+      - Owners
+schemes:
+- http
+swagger: "2.0"

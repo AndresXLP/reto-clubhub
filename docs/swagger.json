@@ -1,0 +1,400 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "Hotel franchise management system.",
+        "title": "Franchises System",
+        "contact": {},
+        "license": {
+            "name": "Andres Puello"
+        },
+        "version": "1.0"
+    },
+    "basePath": "/api",
+    "paths": {
+        "/companies/": {
+            "post": {
+                "description": "Create company",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Companies"
+                ],
+                "summary": "Create company",
+                "parameters": [
+                    {
+                        "description": "Company",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.Company"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/franchises/": {
+            "post": {
+                "description": "Create a franchise",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Franchises"
+                ],
+                "summary": "Create a franchise",
+                "parameters": [
+                    {
+                        "description": "Franchise",
+                        "name": "franchise",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.Franchise"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/franchises/company/{company_id}": {
+            "get": {
+                "description": "Get franchises by company owner",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Franchises"
+                ],
+                "summary": "Get franchises by company owner",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Company ID",
+                        "name": "company_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/entity.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.FranchiseWithCompany"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/franchises/details/{name}": {
+            "get": {
+                "description": "Get a franchise by name",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Franchises"
+                ],
+                "summary": "Get a franchise by name",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Franchise name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/entity.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.Franchise"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "description": "health service",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Check if service is active",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.HealthCheckResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/owners/": {
+            "post": {
+                "description": "Create owner",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Owners"
+                ],
+                "summary": "Create owner",
+                "parameters": [
+                    {
+                        "description": "owner",
+                        "name": "owner",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.Owner"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.Company": {
+            "type": "object",
+            "required": [
+                "location",
+                "name",
+                "owner_id",
+                "tax_number"
+            ],
+            "properties": {
+                "location": {
+                    "$ref": "#/definitions/dto.Location"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "My entreprise holding"
+                },
+                "owner_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "tax_number": {
+                    "type": "string",
+                    "example": "DD79654121"
+                }
+            }
+        },
+        "dto.Franchise": {
+            "type": "object",
+            "required": [
+                "company_owner",
+                "location",
+                "name",
+                "url"
+            ],
+            "properties": {
+                "company_owner": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "location": {
+                    "$ref": "#/definitions/dto.Location"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Park royal"
+                },
+                "url": {
+                    "type": "string",
+                    "example": "www.park-royal.com"
+                }
+            }
+        },
+        "dto.FranchiseWithCompany": {
+            "type": "object",
+            "properties": {
+                "company": {
+                    "$ref": "#/definitions/dto.Company"
+                },
+                "franchises": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.Franchise"
+                    }
+                }
+            }
+        },
+        "dto.Location": {
+            "type": "object",
+            "required": [
+                "address",
+                "city",
+                "country",
+                "zip_code"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "78 Rober ST"
+                },
+                "city": {
+                    "type": "string",
+                    "example": "Toronto"
+                },
+                "country": {
+                    "type": "string",
+                    "example": "Canada"
+                },
+                "zip_code": {
+                    "type": "string",
+                    "example": "F9A 92O"
+                }
+            }
+        },
+        "dto.Owner": {
+            "type": "object",
+            "required": [
+                "email",
+                "first_name",
+                "last_name",
+                "location",
+                "phone"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "location": {
+                    "$ref": "#/definitions/dto.Location"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.Response": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.HealthCheckResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
