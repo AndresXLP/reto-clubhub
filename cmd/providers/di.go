@@ -9,7 +9,7 @@ import (
 	"franchises-system/internal/infra/api/router"
 	"franchises-system/internal/infra/api/router/groups"
 	"franchises-system/internal/infra/resources/postgres"
-	"franchises-system/pkg/http"
+	"franchises-system/internal/utils/http"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/dig"
 )
@@ -23,7 +23,7 @@ func BuildContainer() *dig.Container {
 		return echo.New()
 	})
 
-	_ = Container.Provide(func() *http.HttpClient {
+	_ = Container.Provide(func() http.HttpClient {
 		return http.NewHTTPClient(3, 5*time.Second, 30*time.Second)
 	})
 

@@ -7,15 +7,19 @@ import (
 	"time"
 )
 
-type HttpClient struct {
+type HttpClient interface {
+	Get(c context.Context, url string) (*http.Response, error)
+}
+
+type httpClient struct {
 	Client     *http.Client
 	MaxRetries int
 	RetryDelay time.Duration
 	TimeOut    time.Duration
 }
 
-func NewHTTPClient(maxRetries int, retryInterval time.Duration, timeout time.Duration) *HttpClient {
-	return &HttpClient{
+func NewHTTPClient(maxRetries int, retryInterval time.Duration, timeout time.Duration) HttpClient {
+	return &httpClient{
 		Client:     &http.Client{},
 		MaxRetries: maxRetries,
 		RetryDelay: retryInterval,
@@ -23,7 +27,7 @@ func NewHTTPClient(maxRetries int, retryInterval time.Duration, timeout time.Dur
 	}
 }
 
-func (hc *HttpClient) doRequest(req *http.Request) (resp *http.Response, err error) {
+func (hc *httpClient) doRequest(req *http.Request) (resp *http.Response, err error) {
 	i := 0
 	for ; i < hc.MaxRetries; i++ {
 		resp, err = hc.Client.Do(req)
@@ -40,7 +44,7 @@ func (hc *HttpClient) doRequest(req *http.Request) (resp *http.Response, err err
 	return
 }
 
-func (hc *HttpClient) Get(c context.Context, url string) (*http.Response, error) {
+func (hc *httpClient) Get(c context.Context, url string) (*http.Response, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err

@@ -33,7 +33,7 @@ changelog:
 
 .PHONY: docker-build
 docker-build:
-	docker build -t system-tweet .
+	docker build -t hotel-system .
 
 .PHONY: compose-up
 compose-up: docker-build

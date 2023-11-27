@@ -9,5 +9,8 @@ type Company struct {
 }
 
 func (c *Company) Validate() error {
+	if err := conform.Struct(ctx, c); err != nil {
+		return err
+	}
 	return validate.Struct(c)
 }
