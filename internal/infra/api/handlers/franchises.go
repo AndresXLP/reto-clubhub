@@ -43,7 +43,9 @@ func (hand *franchises) CreateFranchise(c echo.Context) error {
 	}
 
 	if err := hand.app.CreateFranchise(ctx, request); err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusInternalServerError, entity.Response{
+			Message: err.Error(),
+		})
 	}
 
 	return c.JSON(http.StatusCreated, entity.Response{

@@ -8,6 +8,7 @@ import (
 	"franchises-system/internal/domain/entity"
 	"franchises-system/internal/domain/ports/postgres/interfaces"
 	"franchises-system/internal/infra/adapters/postgres/model"
+	"franchises-system/pkg/strings"
 	"github.com/labstack/echo/v4"
 )
 
@@ -20,12 +21,14 @@ type Franchises interface {
 type franchises struct {
 	repo interfaces.Repository
 	Companies
+	WebInfo
 }
 
-func NewFranchisesApp(repo interfaces.Repository, companies Companies) Franchises {
+func NewFranchisesApp(repo interfaces.Repository, companies Companies, webInfo WebInfo) Franchises {
 	return &franchises{
 		repo:      repo,
 		Companies: companies,
+		WebInfo:   webInfo,
 	}
 }
 
@@ -41,9 +44,35 @@ func (app *franchises) CreateFranchise(ctx context.Context, request dto.Franchis
 		Url:       request.Url,
 	}
 
-	if err = app.repo.CreateFranchise(ctx, franchise, request.Location); err != nil {
+	ID, err := app.repo.CreateFranchise(ctx, franchise, request.Location)
+	if err != nil {
 		return err
 	}
+
+	webInfo := make(chan entity.WebInfo)
+	errChan := make(chan error)
+
+	go func() {
+		defer close(webInfo)
+		defer close(errChan)
+		errChan <- app.GetWebInfo(ctx, strings.CleanURL(request.Url), webInfo)
+	}()
+
+	info := <-webInfo
+	err = app.repo.SetAdditionalInfoFranchise(ctx, model.AdditionalFranchiseInfo{
+		FranchiseId:           ID,
+		Protocol:              info.Protocol,
+		TraceRoutes:           info.TraceRoutes,
+		DomainCreatedAt:       info.Domain.CreatedAt,
+		DomainExpiredAt:       info.Domain.ExpiredAt,
+		DomainRegistrantName:  info.Domain.RegistrantName,
+		DomainRegistrantEmail: info.Domain.RegistrantEmail,
+	})
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

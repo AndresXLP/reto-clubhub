@@ -21,7 +21,7 @@ func NewRepository(db *gorm.DB) interfaces.Repository {
 
 //Franchises Repository
 
-func (repo repository) CreateFranchise(ctx context.Context, newFranchise model.Franchises, location dto.Location) error {
+func (repo repository) CreateFranchise(ctx context.Context, newFranchise model.Franchises, location dto.Location) (int64, error) {
 	country := model.Countries{Name: location.Country}
 	city := model.Cities{Name: location.City}
 	address := model.Addresses{
@@ -46,6 +46,16 @@ func (repo repository) CreateFranchise(ctx context.Context, newFranchise model.F
 
 		return nil
 	}); err != nil {
+		return 0, err
+	}
+
+	return newFranchise.ID, nil
+}
+
+func (repo repository) SetAdditionalInfoFranchise(ctx context.Context, info model.AdditionalFranchiseInfo) error {
+	if err := repo.db.WithContext(ctx).
+		Table("additional_franchises_info").
+		Create(&info).Error; err != nil {
 		return err
 	}
 
