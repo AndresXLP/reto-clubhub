@@ -1,6 +1,7 @@
 package providers
 
 import (
+	"franchises-system/internal/infra/api/router"
 	"franchises-system/internal/infra/resources/postgres"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/dig"
@@ -16,6 +17,8 @@ func BuildContainer() *dig.Container {
 	})
 
 	_ = Container.Provide(postgres.NewPostgresConnection)
+
+	_ = Container.Provide(router.NewRouter)
 
 	return Container
 }
