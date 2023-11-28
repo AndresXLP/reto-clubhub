@@ -27,10 +27,6 @@ format:
 	goimports -w ./
 	go fmt ./...
 
-.PHONY: changelog
-changelog:
-	git-chglog -o CHANGELOG.md
-
 .PHONY: docker-build
 docker-build:
 	docker build -t hotel-system .
@@ -50,3 +46,9 @@ compose-down:
 .PHONY: compose-test
 compose-test:
 	docker-compose run --rm test
+
+.PHONY: migrate-up
+migrate-up:
+	curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.2/migrate.linux-amd64.tar.gz | tar xvz
+	./migrate -path ./internal/infra/resources/postgres/migrations -database postgresql://${POSTGRESQL_DB_USER}:${POSTGRESQL_DB_PASSWORD}@${POSTGRESQL_DB_HOST}:${POSTGRESQL_DB_PORT}/${POSTGRESQL_DB_NAME}?sslmode=disable up;
+

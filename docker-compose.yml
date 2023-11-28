@@ -1,0 +1,11 @@
+version: "3.0"
+
+services:
+  hotel-system-service:
+    container_name: hotel-system
+    build:
+      context: .
+    ports:
+      - "$SERVER_PORT:$SERVER_PORT"
+    env_file:
+      - .env
