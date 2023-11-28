@@ -27,6 +27,14 @@ func NewFranchisesHandler(app app.Franchises) Franchises {
 	}
 }
 
+// @Tags			Franchises
+// @Summary		Create a franchise
+// @Description	Create a franchise
+// @Produce		json
+// @Param			franchise	body		dto.Franchise	true	"Franchise"
+// @Success		201			{object}	entity.Response
+// @Failure		400			{object}	entity.Response
+// @Router			/franchises/ [post]
 func (hand *franchises) CreateFranchise(c echo.Context) error {
 	ctx := c.Request().Context()
 
@@ -53,6 +61,14 @@ func (hand *franchises) CreateFranchise(c echo.Context) error {
 	})
 }
 
+// @Tags			Franchises
+// @Summary		Get a franchise by name
+// @Description	Get a franchise by name
+// @Produce		json
+// @Param			name	path		string	true	"Franchise name"
+// @Success		200		{object}	entity.Response{data=dto.Franchise}
+// @Failure		400		{object}	entity.Response
+// @Router			/franchises/details/{name} [get]
 func (hand *franchises) GetFranchiseByName(c echo.Context) error {
 	request := strings.ToUpper(c.Param("name"))
 	if request == "" {
@@ -72,6 +88,14 @@ func (hand *franchises) GetFranchiseByName(c echo.Context) error {
 	})
 }
 
+// @Tags			Franchises
+// @Summary		Get franchises by company owner
+// @Description	Get franchises by company owner
+// @Produce		json
+// @Param			company_id	path		int	true	"Company ID"
+// @Success		200			{object}	entity.Response{data=dto.FranchiseWithCompany}
+// @Failure		400			{object}	entity.Response
+// @Router			/franchises/company/{company_id} [get]
 func (hand *franchises) GetFranchisesByCompanyOwner(c echo.Context) error {
 	companyID, err := strconv.ParseInt(c.Param("company_id"), 10, 64)
 	if err != nil || companyID == 0 {

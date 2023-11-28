@@ -25,14 +25,14 @@ type Postgres struct {
 }
 
 var (
-	once sync.Once
+	Once sync.Once
 	Cfg  Config
 )
 
 func Environments() Config {
-	once.Do(func() {
+	Once.Do(func() {
 		if err := config.GetConfigFromEnv(&Cfg); err != nil {
-			log.Panic(err)
+			log.Panicf("Error parsing environment vars %#v", err)
 		}
 	})
 

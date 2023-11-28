@@ -23,6 +23,15 @@ func NewCompaniesHandler(app app.Companies) Companies {
 	}
 }
 
+// @Tags			Companies
+// @Summary		Create company
+// @Description	Create company
+// @Produce		json
+// @Param			request	body		dto.Company	true	"Company"
+// @Success		200		{object}	entity.Response
+// @Failure		400		{object}	entity.Response
+// @Failure		500		{object}	entity.Response
+// @Router			/companies/ [post]
 func (hand *company) CreateCompany(c echo.Context) error {
 	request := dto.Company{}
 	if err := c.Bind(&request); err != nil {

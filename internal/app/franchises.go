@@ -8,7 +8,7 @@ import (
 	"franchises-system/internal/domain/entity"
 	"franchises-system/internal/domain/ports/postgres/interfaces"
 	"franchises-system/internal/infra/adapters/postgres/model"
-	"franchises-system/pkg/strings"
+	"franchises-system/internal/utils/strings"
 	"github.com/labstack/echo/v4"
 )
 
@@ -49,17 +49,15 @@ func (app *franchises) CreateFranchise(ctx context.Context, request dto.Franchis
 		return err
 	}
 
-	webInfo := make(chan entity.WebInfo)
-	errChan := make(chan error)
+	info, err := app.GetWebInfo(ctx, strings.CleanURL(request.Url))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, entity.Response{
+			Message: "Franchise created successfully, but could not get web info",
+			Data:    err.Error(),
+		})
+	}
 
-	go func() {
-		defer close(webInfo)
-		defer close(errChan)
-		errChan <- app.GetWebInfo(ctx, strings.CleanURL(request.Url), webInfo)
-	}()
-
-	info := <-webInfo
-	err = app.repo.SetAdditionalInfoFranchise(ctx, model.AdditionalFranchiseInfo{
+	if err = app.repo.SetAdditionalInfoFranchise(ctx, model.AdditionalFranchiseInfo{
 		FranchiseId:           ID,
 		Protocol:              info.Protocol,
 		TraceRoutes:           info.TraceRoutes,
@@ -67,9 +65,7 @@ func (app *franchises) CreateFranchise(ctx context.Context, request dto.Franchis
 		DomainExpiredAt:       info.Domain.ExpiredAt,
 		DomainRegistrantName:  info.Domain.RegistrantName,
 		DomainRegistrantEmail: info.Domain.RegistrantEmail,
-	})
-
-	if err != nil {
+	}); err != nil {
 		return err
 	}
 
