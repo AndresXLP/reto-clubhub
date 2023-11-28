@@ -8,7 +8,8 @@ import (
 )
 
 type Repository interface {
-	CreateFranchise(ctx context.Context, newFranchise model.Franchises, locations dto.Location) error
+	CreateFranchise(ctx context.Context, newFranchise model.Franchises, locations dto.Location) (int64, error)
+	SetAdditionalInfoFranchise(ctx context.Context, info model.AdditionalFranchiseInfo) error
 	GetFranchiseByID(ctx context.Context, ID int64) (dto.Franchise, error)
 	GetFranchisesByCompanyID(ctx context.Context, ID int64) (dto.Franchises, error)
 	GetFranchiseByName(ctx context.Context, name string) (dto.Franchise, error)
